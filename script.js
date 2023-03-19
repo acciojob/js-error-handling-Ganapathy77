@@ -1,13 +1,13 @@
 class OutOfRangeError extends Error {
-	constructor(args){
-		super();
-		this.name = "OutOfBoundError";
-		this.message = `Expression should only consist of integers and +,-,*,/ characters and not "${args}" `
-	}
+    constructor(args) {
+        super();
+        this.name = "OutOfBoundError";
+        this.message = `Expression should only consist of integers and +,-,*,/ characters and not "${args}" `
+    }
 }
 
 class InvalidExprError extends Error {
-    constructor(args){
+    constructor(args) {
         super();
         this.name = "InvalidExprError"
         this.message = `Expression should not have an invalid combination of expression " ${args} "`
@@ -15,7 +15,7 @@ class InvalidExprError extends Error {
 }
 
 class NoInputError extends Error {
-    constructor(args){
+    constructor(args) {
         super();
         this.name = "NoInputError"
         this.message = `No input was entered `
@@ -23,33 +23,39 @@ class NoInputError extends Error {
 }
 
 
-function evalString(){
-	let str = document.getElementById("input").value;
-	let strArr = str.split("");
-	try{
-        if(str.trim() == ""){
-            throw new NoInputError()
+function evalString() {
+    let str = document.getElementById("input").value;
+    let strArr = str.split("");
+    try {
+        strArr.forEach((element) => {
+            let numRegex = /([0-9]+)/
+            let operatorRegex = /([\+\-\*\/]+)/
+            let spaceRegex = /([0-9]+)/
+            if (!(numRegex.test(element) || spaceRegex.test(element) || operatorRegex.test(element))) {
+                throw new OutOfRangeError(element);
+            }
+        })
+        str.replace(" ", "");
+        if (["+", "*", "/"].includes(str[0])) {
+            throw new SyntaxError(
+                "Expression should not start with invalid operator"
+            );
         }
-		strArr.forEach((element)=>{
-			let numRegex = /([0-9]+)/
-			let operatorRegex = /([\+\-\*\/]+)/
-			let spaceRegex = /([0-9]+)/
-			if(!(numRegex.test(element) || spaceRegex.test(element) || operatorRegex.test(element))){
-				throw new OutOfRangeError(element);
-			}
-		})
+        if (["+", "*", "/", "-"].includes(str[str.length - 1])) {
+            throw new SyntaxError("Expression should not end with invalid operator");
+        }
         let mainRegex = /([\-]*[0-9]+[\s]*[\+\_\*\/][\s]*[\-]*[0-9]+$)/
 
-        if(!mainRegex.test(str)){
+        if (!mainRegex.test(str)) {
             throw new InvalidExprError(str)
         }
         alert(`Passed ans is : ${eval(str)}`);
-	}
-	catch(e){
-		alert(e)
-	}
+    }
+    catch (e) {
+        alert(e)
+    }
 }
 
 const button = document.querySelector('button')
 
-button.addEventListener('click' , evalString)
+button.addEventListener('click', evalString)
